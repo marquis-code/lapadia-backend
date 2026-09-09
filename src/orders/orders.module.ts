@@ -7,16 +7,16 @@ import { Subscription, SubscriptionSchema } from '../subscriptions/schemas/subsc
 import { PaymentsModule } from '../payments/payments.module';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
+import { ExportModule } from '../export/export.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Order.name, schema: OrderSchema },
-      { name: Subscription.name, schema: SubscriptionSchema }
-    ]),
+    MongooseModule.forFeature([{ name: Order.name, schema: OrderSchema }]),
+    MongooseModule.forFeature([{ name: Subscription.name, schema: SubscriptionSchema }]),
     PaymentsModule,
     UsersModule,
-    EmailModule
+    EmailModule,
+    ExportModule
   ],
   providers: [OrdersService],
   controllers: [OrdersController],

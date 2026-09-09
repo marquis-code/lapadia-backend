@@ -14,6 +14,8 @@ import { EmailModule } from './email/email.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ExportModule } from './export/export.module';
 import { SettingsModule } from './settings/settings.module';
+import { UploadModule } from './upload/upload.module';
+import { FinancesModule } from './finances/finances.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { SettingsModule } from './settings/settings.module';
     NotificationsModule,
     ExportModule,
     SettingsModule,
+    UploadModule,
+    FinancesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Query, Param } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, Param, Patch } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 
 @Controller('orders')
@@ -28,5 +28,10 @@ export class OrdersController {
   @Post(':id/pay')
   async payPendingOrder(@Param('id') id: string) {
     return this.ordersService.payPendingOrder(id);
+  }
+
+  @Patch(':id/status')
+  async updateStatus(@Param('id') id: string, @Body('orderStatus') orderStatus: string) {
+    return this.ordersService.updateOrderStatus(id, orderStatus);
   }
 }

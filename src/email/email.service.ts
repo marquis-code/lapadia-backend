@@ -14,7 +14,7 @@ export class EmailService {
   async sendEmail(to: string, subject: string, html: string, attachments?: any[]) {
     try {
       const response = await this.resend.emails.send({
-        from: 'Lapadia Fresh <noreply@lapadiafresh.com>',
+        from: 'Lapadia Fresh <noreply@lapadia.org>',
         to,
         subject,
         html,

@@ -6,6 +6,7 @@ import { Subscription, SubscriptionDocument } from '../subscriptions/schemas/sub
 import { PaymentsService } from '../payments/payments.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
+import { SheetsService } from '../export/sheets.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -15,7 +16,8 @@ export class OrdersService {
     @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>,
     private paymentsService: PaymentsService,
     private usersService: UsersService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private sheetsService: SheetsService
   ) {}
 
   async createOrder(orderData: any, userId?: string) {
@@ -211,6 +213,9 @@ export class OrdersService {
               emailHtml
             ).catch(e => console.error('Failed to send receipt:', e));
           }
+
+          // Append to real-time Google Sheet
+          this.sheetsService.appendOrderRow(order).catch(e => console.error('Failed to append to sheets:', e));
         }
         return { success: true, message: 'Payment verified successfully' };
       }
@@ -270,5 +275,16 @@ export class OrdersService {
       console.error('Paystack initialization failed', error);
       throw new BadRequestException('Payment initialization failed');
     }
+  }
+
+  async updateOrderStatus(orderId: string, orderStatus: string) {
+    const order = await this.orderModel.findById(orderId);
+    if (!order) {
+      throw new BadRequestException('Order not found');
+    }
+    
+    order.orderStatus = orderStatus;
+    await order.save();
+    return order;
   }
 }

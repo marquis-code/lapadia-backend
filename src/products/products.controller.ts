@@ -6,8 +6,12 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async findAll(@Query('limit') limit: string) {
-    return this.productsService.findAll(limit ? parseInt(limit, 10) : undefined);
+  async findAll(
+    @Query('limit') limit: string,
+    @Query('trending') trending: string
+  ) {
+    const isTrending = trending === 'true';
+    return this.productsService.findAll(limit ? parseInt(limit, 10) : undefined, isTrending);
   }
 
   @Get(':id')

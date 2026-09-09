@@ -29,8 +29,16 @@ export class ProductsService implements OnModuleInit {
     }
   }
 
-  async findAll(limit?: number) {
+  async findAll(limit?: number, trending?: boolean) {
     let query = this.productModel.find();
+    
+    if (trending) {
+      // For trending, let's sort by stock descending (or whichever criteria makes sense)
+      query = query.sort({ stock: -1 });
+    } else {
+      query = query.sort({ _id: -1 });
+    }
+
     if (limit) {
       query = query.limit(limit);
     }
