@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Order, OrderDocument } from '../orders/schemas/order.schema';
+import { PayoutRequest, PayoutRequestDocument } from './schemas/payout-request.schema';
 
 @Injectable()
 export class FinancesService {
   constructor(
     @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
+    @InjectModel(PayoutRequest.name) private payoutRequestModel: Model<PayoutRequestDocument>,
   ) {}
 
   async getOverview() {
@@ -35,5 +37,19 @@ export class FinancesService {
       .exec();
     
     return transactions;
+  }
+
+  async requestPayout(amount: number) {
+    if (!amount || amount <= 0) {
+      throw new Error('Invalid payout amount');
+    }
+
+    const { availableBalance } = await this.getOverview();
+    if (amount > availableBalance) {
+      throw new Error('Insufficient funds for payout');
+    }
+
+    const payout = new this.payoutRequestModel({ amount, status: 'pending' });
+    return payout.save();
   }
 }

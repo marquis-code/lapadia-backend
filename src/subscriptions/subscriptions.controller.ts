@@ -56,4 +56,10 @@ export class SubscriptionsController {
   deletePlan(@Param('id') id: string) {
     return this.subscriptionsService.deletePlan(id);
   }
+
+  @Get('admin/user-subscriptions')
+  getAdminUserSubscriptions() {
+    // In a real app, verify admin role here
+    return this.subscriptionsService.getAdminUserSubscriptions();
+  }
 }

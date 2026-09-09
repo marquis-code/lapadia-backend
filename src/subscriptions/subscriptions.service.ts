@@ -46,6 +46,16 @@ export class SubscriptionsService {
     return this.subscriptionPlanModel.findByIdAndDelete(id).exec();
   }
 
+  async getAdminUserSubscriptions() {
+    return this.subscriptionModel
+      .find()
+      .populate('userId', 'name email')
+      .populate('planId')
+      .populate('items.productId')
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleSubscriptionCharges() {
     this.logger.log('Starting daily subscription billing processing...');
@@ -99,8 +109,39 @@ export class SubscriptionsService {
              this.logger.warn(`Payment failed for subscription ${sub._id}: ${chargeResult.message}`);
           }
         }
-      } catch (error) {
-        this.logger.error(`Error processing subscription ${sub._id}: ${error.message}`, error.stack);
+      } catch (err: any) {
+        this.logger.error(`Failed to renew subscription ${sub._id}: ${err.message}`);
+        // Here we could implement retry logic or suspend the subscription
+      }
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleSubscriptionExpiryReminders() {
+    this.logger.log('Checking for subscriptions expiring in 3 days...');
+    
+    const targetDate = new Date();
+    targetDate.setDate(targetDate.getDate() + 3);
+    targetDate.setHours(0, 0, 0, 0);
+
+    const endTargetDate = new Date(targetDate);
+    endTargetDate.setHours(23, 59, 59, 999);
+
+    const expiringSubscriptions = await this.subscriptionModel.find({
+      status: 'active',
+      nextBillingDate: {
+        $gte: targetDate,
+        $lte: endTargetDate
+      }
+    }).populate('userId', 'name email').exec();
+
+    for (const sub of expiringSubscriptions) {
+      if (sub.userId && (sub.userId as any).email) {
+        await this.emailService.sendEmail(
+          (sub.userId as any).email,
+          'Your Subscription is Expiring Soon',
+          `Hello ${(sub.userId as any).name},\n\nYour subscription is set to renew or expire on ${sub.nextBillingDate.toDateString()}. Please ensure your payment method is up to date.`
+        );
       }
     }
   }
