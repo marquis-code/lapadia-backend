@@ -58,6 +58,17 @@ export class Order {
 
   @Prop({ type: String, default: null })
   guestPhone: string;
+
+  @Prop({ type: Date, default: null })
+  scheduledTime: Date;
+
+  @Prop({ type: String, default: null })
+  promoCode: string;
+
+  @Prop({ type: Number, default: 0 })
+  discountAmount: number;
+
+  createdAt: Date;
 }
 
 export const OrderSchema = SchemaFactory.createForClass(Order);

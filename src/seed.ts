@@ -12,6 +12,9 @@ const productSchema = new mongoose.Schema({
   category: { type: String, required: true },
   stock: { type: Number, default: 0 },
   isAvailable: { type: Boolean, default: true },
+  nutritionalInfo: { type: Object, default: null },
+  allergens: { type: [String], default: [] },
+  ingredients: { type: [String], default: [] },
 }, { timestamps: true });
 
 const Product = mongoose.model('Product', productSchema);
@@ -24,7 +27,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Mango', 'Pineapple', 'Turmeric', 'Coconut Milk', 'Honey'],
+    allergens: ['Tree Nuts (coconut)'],
+    nutritionalInfo: { calories: 220, protein: 3, carbs: 48, fat: 4, fiber: 3, sugar: 38, servingSize: '450ml' }
   },
   {
     name: 'Green Machine',
@@ -33,7 +39,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Kale', 'Spinach', 'Cucumber', 'Green Apple', 'Ginger', 'Lemon'],
+    allergens: [],
+    nutritionalInfo: { calories: 150, protein: 5, carbs: 30, fat: 1, fiber: 6, sugar: 18, servingSize: '450ml' }
   },
   {
     name: 'Berry Blast',
@@ -42,7 +51,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Strawberries', 'Blueberries', 'Raspberries', 'Greek Yogurt', 'Honey'],
+    allergens: ['Milk'],
+    nutritionalInfo: { calories: 260, protein: 8, carbs: 45, fat: 5, fiber: 7, sugar: 32, servingSize: '450ml' }
   },
   {
     name: 'Pineapple Punch',
@@ -51,7 +63,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Pineapple', 'Orange', 'Fresh Mint', 'Ice', 'Agave Syrup'],
+    allergens: [],
+    nutritionalInfo: { calories: 180, protein: 2, carbs: 42, fat: 0.5, fiber: 3, sugar: 35, servingSize: '450ml' }
   },
   {
     name: 'Strawberry Banana',
@@ -60,7 +75,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Strawberries', 'Banana', 'Oat Milk', 'Vanilla Extract'],
+    allergens: ['Gluten (oat milk)'],
+    nutritionalInfo: { calories: 240, protein: 4, carbs: 52, fat: 3, fiber: 5, sugar: 36, servingSize: '450ml' }
   },
   {
     name: 'Mango Tango',
@@ -69,7 +87,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Mango', 'Coconut Water', 'Lime Juice', 'Chia Seeds'],
+    allergens: [],
+    nutritionalInfo: { calories: 200, protein: 3, carbs: 44, fat: 2, fiber: 5, sugar: 34, servingSize: '450ml' }
   },
   {
     name: 'Citrus Surge',
@@ -78,7 +99,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Juices',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Orange', 'Grapefruit', 'Lemon', 'Ginger', 'Raw Honey'],
+    allergens: [],
+    nutritionalInfo: { calories: 160, protein: 2, carbs: 38, fat: 0.5, fiber: 2, sugar: 30, servingSize: '450ml' }
   },
   {
     name: 'Acai Power Bowl Smoothie',
@@ -87,7 +111,10 @@ const seedProducts = [
     imageUrl: 'https://res.cloudinary.com/zkrczwxc/image/upload/v1725895782/samples/food/dessert.jpg',
     category: 'Smoothies',
     stock: 50,
-    isAvailable: true
+    isAvailable: true,
+    ingredients: ['Acai Berry', 'Blueberries', 'Strawberries', 'Banana', 'Almond Milk', 'Chia Seeds', 'Granola'],
+    allergens: ['Tree Nuts (almond)', 'Gluten (granola)'],
+    nutritionalInfo: { calories: 320, protein: 7, carbs: 55, fat: 9, fiber: 10, sugar: 28, servingSize: '500ml' }
   }
 ];
 

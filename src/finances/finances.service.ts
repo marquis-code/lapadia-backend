@@ -52,4 +52,47 @@ export class FinancesService {
     const payout = new this.payoutRequestModel({ amount, status: 'pending' });
     return payout.save();
   }
+  async getChartData() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const paidOrders = await this.orderModel.find({
+      paymentStatus: 'paid',
+      createdAt: { $gte: thirtyDaysAgo }
+    }).sort({ createdAt: 1 }).exec();
+
+    const dailyData: Record<string, number> = {};
+
+    // Initialize last 30 days with 0
+    for (let i = 0; i < 30; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      dailyData[dateStr] = 0;
+    }
+
+    paidOrders.forEach(order => {
+      const dateStr = new Date(order.createdAt).toISOString().split('T')[0];
+      if (dailyData[dateStr] !== undefined) {
+        dailyData[dateStr] += (order.totalAmount || 0);
+      }
+    });
+
+    const labels = Object.keys(dailyData).sort();
+    const data = labels.map(label => dailyData[label]);
+
+    return {
+      labels,
+      datasets: [
+        {
+          label: 'Daily Revenue (₦)',
+          data,
+          borderColor: '#10b981', // emerald-500
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    };
+  }
 }

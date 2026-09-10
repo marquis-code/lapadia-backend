@@ -10,6 +10,11 @@ export class FinancesController {
     return this.financesService.getOverview();
   }
 
+  @Get('chart-data')
+  async getChartData() {
+    return this.financesService.getChartData();
+  }
+
   @Get('transactions')
   async getTransactions() {
     return this.financesService.getTransactions();

@@ -25,6 +25,23 @@ export class Product {
   
   @Prop({ default: true })
   isAvailable: boolean;
+
+  @Prop({ type: Object, default: null })
+  nutritionalInfo: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    fiber: number;
+    sugar: number;
+    servingSize: string;
+  };
+
+  @Prop({ type: [String], default: [] })
+  allergens: string[];
+
+  @Prop({ type: [String], default: [] })
+  ingredients: string[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

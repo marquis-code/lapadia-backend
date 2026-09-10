@@ -16,6 +16,7 @@ import { ExportModule } from './export/export.module';
 import { SettingsModule } from './settings/settings.module';
 import { UploadModule } from './upload/upload.module';
 import { FinancesModule } from './finances/finances.module';
+import { PromosModule } from './promos/promos.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { FinancesModule } from './finances/finances.module';
     SettingsModule,
     UploadModule,
     FinancesModule,
+    PromosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
