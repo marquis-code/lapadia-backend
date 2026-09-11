@@ -83,4 +83,9 @@ export class SubscriptionsController {
   updateAdminUserSubscriptionStatus(@Param('id') id: string, @Body() body: { status: string }) {
     return this.subscriptionsService.updateSubscriptionStatus(id, body.status);
   }
+
+  @Post('admin/user-subscriptions/:id/deliveries')
+  addAdminUserSubscriptionDeliveryLog(@Param('id') id: string, @Body() body: { status: string, notes: string }) {
+    return this.subscriptionsService.addDeliveryLog(id, body);
+  }
 }

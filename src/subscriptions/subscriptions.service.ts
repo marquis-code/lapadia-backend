@@ -75,7 +75,14 @@ export class SubscriptionsService {
     return this.subscriptionModel
       .find()
       .populate('userId', 'name email')
-      .populate('planId')
+      .populate({
+        path: 'planId',
+        populate: [
+          { path: 'productIds' },
+          { path: 'productId' },
+          { path: 'swappableProductIds' }
+        ]
+      })
       .populate('items.productId')
       .sort({ createdAt: -1 })
       .exec();
@@ -83,6 +90,14 @@ export class SubscriptionsService {
 
   async updateSubscriptionStatus(id: string, status: string) {
     return this.subscriptionModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+  }
+
+  async addDeliveryLog(id: string, log: { status: string, notes: string }) {
+    return this.subscriptionModel.findByIdAndUpdate(
+      id,
+      { $push: { deliveryLogs: { ...log, date: new Date() } } },
+      { new: true }
+    ).exec();
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)

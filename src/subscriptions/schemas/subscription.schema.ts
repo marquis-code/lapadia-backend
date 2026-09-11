@@ -46,6 +46,9 @@ export class Subscription {
   
   @Prop({ required: true })
   deliveryAddress: string;
+
+  @Prop({ type: [{ date: Date, status: String, notes: String }], default: [] })
+  deliveryLogs: { date: Date, status: string, notes: string }[];
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
