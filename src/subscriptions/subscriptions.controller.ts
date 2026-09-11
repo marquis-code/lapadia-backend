@@ -78,4 +78,9 @@ export class SubscriptionsController {
     // In a real app, verify admin role here
     return this.subscriptionsService.getAdminUserSubscriptions();
   }
+
+  @Put('admin/user-subscriptions/:id/status')
+  updateAdminUserSubscriptionStatus(@Param('id') id: string, @Body() body: { status: string }) {
+    return this.subscriptionsService.updateSubscriptionStatus(id, body.status);
+  }
 }

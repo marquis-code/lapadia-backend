@@ -81,6 +81,10 @@ export class SubscriptionsService {
       .exec();
   }
 
+  async updateSubscriptionStatus(id: string, status: string) {
+    return this.subscriptionModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleSubscriptionCharges() {
     this.logger.log('Starting daily subscription billing processing...');
