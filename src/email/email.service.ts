@@ -14,7 +14,7 @@ export class EmailService {
   async sendEmail(to: string, subject: string, html: string, attachments?: any[]) {
     try {
       const response = await this.resend.emails.send({
-        from: 'Lapadia Fresh <noreply@lapadia.org>',
+        from: this.configService.get<string>('RESEND_FROM_EMAIL') || 'Lapadia Fresh <onboarding@resend.dev>',
         to,
         subject,
         html,

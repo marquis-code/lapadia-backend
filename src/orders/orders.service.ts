@@ -63,7 +63,7 @@ export class OrdersService {
 
     try {
       const channels = savedOrder.isSubscription ? ['card'] : undefined;
-      const paystackRes = await this.paymentsService.initializeTransaction(email, amount, reference, channels);
+      const paystackRes = await this.paymentsService.initializeTransaction(email, amount, reference, channels, orderData.callbackUrl);
       
       savedOrder.paystackReference = reference;
       await savedOrder.save();
