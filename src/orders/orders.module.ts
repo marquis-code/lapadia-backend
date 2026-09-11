@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { OrdersService } from './orders.service';
 import { OrdersController } from './orders.controller';
+import { OrdersWebhookController } from './orders-webhook.controller';
 import { Order, OrderSchema } from './schemas/order.schema';
 import { Subscription, SubscriptionSchema } from '../subscriptions/schemas/subscription.schema';
 import { PaymentsModule } from '../payments/payments.module';
@@ -19,6 +20,6 @@ import { ExportModule } from '../export/export.module';
     ExportModule
   ],
   providers: [OrdersService],
-  controllers: [OrdersController],
+  controllers: [OrdersController, OrdersWebhookController],
 })
 export class OrdersModule {}
