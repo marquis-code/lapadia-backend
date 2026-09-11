@@ -22,11 +22,12 @@ export class PaymentsService {
     return response.json();
   }
 
-  async initializeTransaction(email: string, amount: number, reference: string) {
+  async initializeTransaction(email: string, amount: number, reference: string, channels?: string[]) {
     return this.fetchPaystack('/transaction/initialize', 'POST', {
       email,
       amount: amount * 100, // Paystack uses kobo
       reference,
+      channels,
       callback_url: this.configService.get<string>('PAYSTACK_CALLBACK_URL') || 'http://localhost:3000/checkout/success'
     });
   }

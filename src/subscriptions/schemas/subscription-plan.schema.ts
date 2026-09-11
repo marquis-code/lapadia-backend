@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import mongoose from 'mongoose';
 
 export type SubscriptionPlanDocument = SubscriptionPlan & Document;
 
@@ -22,6 +23,20 @@ export class SubscriptionPlan {
 
   @Prop({ default: false })
   isPopular: boolean;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: false })
+  productId: string;
+
+  // New: array of linked products
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }], default: [] })
+  productIds: string[];
+
+  @Prop({ default: true })
+  allowSwaps: boolean;
+
+  // Products the user can swap between (shown in swap modal)
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }], default: [] })
+  swappableProductIds: string[];
 }
 
 export const SubscriptionPlanSchema = SchemaFactory.createForClass(SubscriptionPlan);

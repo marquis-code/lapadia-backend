@@ -19,18 +19,43 @@ export class SubscriptionsService {
   ) {}
 
   async getUserSubscriptions(userId: string) {
-    return this.subscriptionModel.find({ userId }).populate('planId').populate('items.productId').sort({ createdAt: -1 }).exec();
+    return this.subscriptionModel.find({ userId })
+      .populate({
+        path: 'planId',
+        populate: [
+          { path: 'productIds' },
+          { path: 'swappableProductIds' }
+        ]
+      })
+      .populate('items.productId')
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
-  async cancelSubscription(id: string, userId: string) {
+  async cancelSubscription(id: string, userId: string, reason?: string) {
     const sub = await this.subscriptionModel.findOne({ _id: id, userId });
     if (!sub) throw new Error('Subscription not found or not owned by user');
     sub.status = 'cancelled';
+    if (reason) sub.cancellationReason = reason;
+    return sub.save();
+  }
+
+  async swapSubscriptionItems(id: string, userId: string, newItems: any[]) {
+    const sub = await this.subscriptionModel.findOne({ _id: id, userId }).populate('planId');
+    if (!sub) throw new Error('Subscription not found or not owned by user');
+    
+    const plan: any = sub.planId;
+    if (plan && !plan.allowSwaps) {
+      throw new Error('This subscription plan does not allow product swapping.');
+    }
+
+    sub.items = newItems;
+    // We could recalculate totalAmount here if it's a dynamic box, but for fixed plans it stays the same.
     return sub.save();
   }
 
   async getPlans() {
-    return this.subscriptionPlanModel.find().exec();
+    return this.subscriptionPlanModel.find().populate('productId').populate('productIds').populate('swappableProductIds').exec();
   }
 
   async createPlan(data: any) {

@@ -22,7 +22,7 @@ export class SubscriptionsController {
   }
 
   @Put('user/:id/cancel')
-  cancelSubscription(@Param('id') id: string, @Request() req: any) {
+  cancelSubscription(@Param('id') id: string, @Request() req: any, @Body() body: { reason?: string }) {
     let userId = req.headers['x-user-id'];
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -34,7 +34,23 @@ export class SubscriptionsController {
       } catch(e) {}
     }
     if (!userId) throw new Error('Unauthorized');
-    return this.subscriptionsService.cancelSubscription(id, userId);
+    return this.subscriptionsService.cancelSubscription(id, userId, body.reason);
+  }
+
+  @Put('user/:id/swap')
+  swapSubscriptionItems(@Param('id') id: string, @Body() body: any, @Request() req: any) {
+    let userId = req.headers['x-user-id'];
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.split(' ')[1];
+      try {
+        const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+        if (payload.userId) userId = payload.userId;
+        if (payload.sub) userId = payload.sub;
+      } catch(e) {}
+    }
+    if (!userId) throw new Error('Unauthorized');
+    return this.subscriptionsService.swapSubscriptionItems(id, userId, body.items);
   }
 
   @Get('plans')

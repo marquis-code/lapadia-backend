@@ -17,11 +17,11 @@ export class ExportService {
 
     orderData.forEach((order) => {
       worksheet.addRow({
-        id: order._id,
-        customer: order.userId?.name || order.userId,
-        amount: order.totalAmount,
-        status: order.orderStatus,
-        date: order.createdAt,
+        id: order._id ? order._id.toString() : 'N/A',
+        customer: order.guestName || (order.userId && order.userId.name) ? order.userId.name : 'Guest User',
+        amount: order.totalAmount || 0,
+        status: order.orderStatus || 'pending',
+        date: order.createdAt ? new Date(order.createdAt).toLocaleString() : 'N/A',
       });
     });
 
@@ -43,11 +43,11 @@ export class ExportService {
 
     subscriptionData.forEach((sub) => {
       worksheet.addRow({
-        id: sub._id,
-        customer: sub.userId?.name || sub.userId,
-        plan: sub.planId?.name || 'Custom',
-        status: sub.status,
-        nextBillingDate: sub.nextBillingDate,
+        id: sub._id ? sub._id.toString() : 'N/A',
+        customer: (sub.userId && sub.userId.name) ? sub.userId.name : 'Unknown User',
+        plan: (sub.planId && sub.planId.name) ? sub.planId.name : 'Custom',
+        status: sub.status || 'unknown',
+        nextBillingDate: sub.nextBillingDate ? new Date(sub.nextBillingDate).toLocaleDateString() : 'N/A',
       });
     });
 
@@ -69,11 +69,11 @@ export class ExportService {
 
     financeData.forEach((tx) => {
       worksheet.addRow({
-        id: tx._id,
-        customer: tx.userId?.name || tx.userId,
-        amount: tx.totalAmount || tx.amount,
-        status: tx.paymentStatus || tx.status,
-        date: tx.createdAt,
+        id: tx._id ? tx._id.toString() : 'N/A',
+        customer: tx.guestName || (tx.userId && tx.userId.name) ? tx.userId.name : 'Unknown',
+        amount: tx.totalAmount || tx.amount || 0,
+        status: tx.paymentStatus || tx.status || 'unknown',
+        date: tx.createdAt ? new Date(tx.createdAt).toLocaleString() : 'N/A',
       });
     });
 

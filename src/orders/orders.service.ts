@@ -62,7 +62,8 @@ export class OrdersService {
     const reference = `ORD_${savedOrder._id.toString()}`;
 
     try {
-      const paystackRes = await this.paymentsService.initializeTransaction(email, amount, reference);
+      const channels = savedOrder.isSubscription ? ['card'] : undefined;
+      const paystackRes = await this.paymentsService.initializeTransaction(email, amount, reference, channels);
       
       savedOrder.paystackReference = reference;
       await savedOrder.save();
@@ -95,6 +96,15 @@ export class OrdersService {
           await order.save();
 
           let emailHtml = '';
+
+          // Save the Paystack authorization code for future recurring billing
+          if (response.data.authorization && response.data.authorization.authorization_code) {
+            await this.usersService.updatePaystackCustomer(
+              order.userId.toString(),
+              response.data.customer?.customer_code || '',
+              response.data.authorization.authorization_code
+            );
+          }
 
           if (order.isSubscription) {
             // Support both old fixed plans and new custom subscriptions

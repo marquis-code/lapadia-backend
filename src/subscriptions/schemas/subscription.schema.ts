@@ -40,6 +40,9 @@ export class Subscription {
 
   @Prop({ default: 'active', enum: ['active', 'paused', 'cancelled'] })
   status: string;
+
+  @Prop({ required: false })
+  cancellationReason: string;
   
   @Prop({ required: true })
   deliveryAddress: string;

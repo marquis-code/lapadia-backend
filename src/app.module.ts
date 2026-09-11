@@ -17,6 +17,9 @@ import { SettingsModule } from './settings/settings.module';
 import { UploadModule } from './upload/upload.module';
 import { FinancesModule } from './finances/finances.module';
 import { PromosModule } from './promos/promos.module';
+import { BlogsModule } from './blogs/blogs.module';
+import { EventsModule } from './events/events.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -42,6 +45,9 @@ import { PromosModule } from './promos/promos.module';
     UploadModule,
     FinancesModule,
     PromosModule,
+    BlogsModule,
+    EventsModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
