@@ -1,40 +1,13 @@
-import { Controller, Get, Post, Delete, Param, UseGuards, Request, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Request, Body, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  async findAll() {
-    return this.usersService.findAll();
-  }
-
-  // Assuming we use a simple header check for the demo, or mock a user ID if no guard
-  // In a real app we would use @UseGuards(JwtAuthGuard)
-  @Post('favorites/:productId')
-  async addFavorite(@Param('productId') productId: string, @Request() req: any) {
-    const userId = req.headers['x-user-id'] || '64c8f5b8e4b0e5d9f0a2c1b2'; // Fallback to mock user ID if not provided
-    return this.usersService.addFavorite(userId, productId);
-  }
-
-  @Delete('favorites/:productId')
-  async removeFavorite(@Param('productId') productId: string, @Request() req: any) {
-    const userId = req.headers['x-user-id'] || '64c8f5b8e4b0e5d9f0a2c1b2';
-    return this.usersService.removeFavorite(userId, productId);
-  }
-
-  @Get('favorites')
-  async getFavorites(@Request() req: any) {
-    const userId = req.headers['x-user-id'] || '64c8f5b8e4b0e5d9f0a2c1b2';
-    return this.usersService.getFavorites(userId);
-  }
-
-  @Post('profile') // Use POST or PUT
-  async updateProfile(@Body() body: any, @Request() req: any) {
-    // Basic JWT decoding without needing full AuthGuard setup for now
+  private extractUserId(req: any): string {
     const authHeader = req.headers.authorization;
-    let userId = req.headers['x-user-id']; // Fallback
+    let userId = req.headers['x-user-id']; 
     
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.split(' ')[1];
@@ -44,11 +17,53 @@ export class UsersController {
         if (payload.sub) userId = payload.sub;
       } catch(e) {}
     }
+    return userId;
+  }
 
-    if (!userId) {
-      throw new Error('Unauthorized');
+  @Get()
+  async findAll() {
+    return this.usersService.findAll();
+  }
+
+  @Post('favorites/:productId')
+  async addFavorite(@Param('productId') productId: string, @Request() req: any) {
+    const userId = this.extractUserId(req);
+    if (!userId) throw new UnauthorizedException('Unauthorized');
+    try {
+      return await this.usersService.addFavorite(userId, productId);
+    } catch (e: any) {
+      throw new NotFoundException(e.message);
     }
+  }
 
+  @Delete('favorites/:productId')
+  async removeFavorite(@Param('productId') productId: string, @Request() req: any) {
+    const userId = this.extractUserId(req);
+    if (!userId) throw new UnauthorizedException('Unauthorized');
+    try {
+      return await this.usersService.removeFavorite(userId, productId);
+    } catch (e: any) {
+      throw new NotFoundException(e.message);
+    }
+  }
+
+  @Get('favorites')
+  async getFavorites(@Request() req: any) {
+    const userId = this.extractUserId(req);
+    if (!userId) throw new UnauthorizedException('Unauthorized');
+    try {
+      return await this.usersService.getFavorites(userId);
+    } catch (e: any) {
+      throw new NotFoundException(e.message);
+    }
+  }
+
+  @Post('profile')
+  async updateProfile(@Body() body: any, @Request() req: any) {
+    const userId = this.extractUserId(req);
+    if (!userId) {
+      throw new UnauthorizedException('Unauthorized');
+    }
     return this.usersService.updateProfile(userId, { name: body.name, phone: body.phone, savedAddresses: body.savedAddresses });
   }
 }
