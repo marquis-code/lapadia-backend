@@ -20,6 +20,7 @@ import { PromosModule } from './promos/promos.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { EventsModule } from './events/events.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { CategoriesModule } from './categories/categories.module';
     BlogsModule,
     EventsModule,
     CategoriesModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

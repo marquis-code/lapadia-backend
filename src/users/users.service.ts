@@ -63,19 +63,25 @@ export class UsersService implements OnModuleInit {
   }
 
   async addFavorite(userId: string, productId: string) {
-    return this.userModel.findByIdAndUpdate(
+    const user = await this.userModel.findByIdAndUpdate(
       userId,
       { $addToSet: { favorites: productId } },
       { new: true }
     ).populate('favorites');
+    
+    if (!user) throw new Error('User not found');
+    return user;
   }
 
   async removeFavorite(userId: string, productId: string) {
-    return this.userModel.findByIdAndUpdate(
+    const user = await this.userModel.findByIdAndUpdate(
       userId,
       { $pull: { favorites: productId } },
       { new: true }
     ).populate('favorites');
+    
+    if (!user) throw new Error('User not found');
+    return user;
   }
 
   async getFavorites(userId: string) {
