@@ -23,6 +23,7 @@ export class SettingsController {
       expressDeliveryFee: body.expressDeliveryFee,
       whatsappNumber1: body.whatsappNumber1,
       whatsappNumber2: body.whatsappNumber2,
+      pickupLocation: body.pickupLocation,
     });
   }
 }
