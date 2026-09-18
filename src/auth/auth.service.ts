@@ -44,7 +44,10 @@ export class AuthService {
         id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
+        phone: user.phone,
+        alternativePhone: user.alternativePhone,
+        savedAddresses: user.savedAddresses
       }
     };
   }
