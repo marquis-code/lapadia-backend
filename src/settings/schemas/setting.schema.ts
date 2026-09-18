@@ -13,6 +13,9 @@ export class Setting {
 
   @Prop({ default: '2348099431789' })
   whatsappNumber2: string;
+
+  @Prop({ default: '' })
+  pickupLocation: string;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

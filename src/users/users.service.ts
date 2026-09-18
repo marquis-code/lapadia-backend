@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -43,12 +43,18 @@ export class UsersService implements OnModuleInit {
     return user.save();
   }
 
-  async updateProfile(userId: string, data: { name?: string; phone?: string; savedAddresses?: any[] }) {
-    return this.userModel.findByIdAndUpdate(
-      userId,
-      { $set: data },
-      { new: true }
-    ).select('-passwordHash');
+  async updateProfile(userId: string, data: { name?: string; phone?: string; alternativePhone?: string; savedAddresses?: any[] }) {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        userId,
+        { $set: data },
+        { new: true }
+      ).select('-passwordHash');
+      if (!user) throw new BadRequestException('User not found');
+      return user;
+    } catch (error) {
+      throw new BadRequestException('Failed to update profile: Invalid user ID or payload');
+    }
   }
 
   async updatePaystackCustomer(userId: string, customerCode: string, authCode: string) {

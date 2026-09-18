@@ -64,6 +64,6 @@ export class UsersController {
     if (!userId) {
       throw new UnauthorizedException('Unauthorized');
     }
-    return this.usersService.updateProfile(userId, { name: body.name, phone: body.phone, savedAddresses: body.savedAddresses });
+    return this.usersService.updateProfile(userId, { name: body.name, phone: body.phone, alternativePhone: body.alternativePhone, savedAddresses: body.savedAddresses });
   }
 }
