@@ -21,6 +21,8 @@ export class SettingsController {
     
     return this.settingsService.updateSettings({
       expressDeliveryFee: body.expressDeliveryFee,
+      whatsappNumber1: body.whatsappNumber1,
+      whatsappNumber2: body.whatsappNumber2,
     });
   }
 }

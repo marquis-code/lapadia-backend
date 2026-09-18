@@ -68,6 +68,12 @@ export class Order {
   @Prop({ type: Number, default: 0 })
   discountAmount: number;
 
+  @Prop({ type: String, default: null })
+  orderNotes: string;
+
+  @Prop({ type: String, enum: ['delivery', 'pickup'], default: 'delivery' })
+  deliveryMethod: string;
+
   createdAt: Date;
 }
 

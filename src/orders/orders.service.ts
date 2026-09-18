@@ -53,6 +53,8 @@ export class OrdersService {
       isSubscription: orderData.isSubscription || false,
       subscriptionFrequency: orderData.subscriptionFrequency || null,
       planId: orderData.planId ? new Types.ObjectId(orderData.planId) : null,
+      orderNotes: orderData.orderNotes || null,
+      deliveryMethod: orderData.deliveryMethod || 'delivery',
     });
 
     const savedOrder = await newOrder.save();

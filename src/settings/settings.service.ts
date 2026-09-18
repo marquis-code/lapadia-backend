@@ -29,10 +29,16 @@ export class SettingsService implements OnModuleInit {
     return settings;
   }
 
-  async updateSettings(updateData: { expressDeliveryFee?: number }): Promise<SettingDocument> {
+  async updateSettings(updateData: { expressDeliveryFee?: number, whatsappNumber1?: string, whatsappNumber2?: string }): Promise<SettingDocument> {
     const settings = await this.getSettings();
     if (updateData.expressDeliveryFee !== undefined) {
       settings.expressDeliveryFee = updateData.expressDeliveryFee;
+    }
+    if (updateData.whatsappNumber1 !== undefined) {
+      settings.whatsappNumber1 = updateData.whatsappNumber1;
+    }
+    if (updateData.whatsappNumber2 !== undefined) {
+      settings.whatsappNumber2 = updateData.whatsappNumber2;
     }
     return settings.save();
   }
