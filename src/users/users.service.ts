@@ -45,6 +45,7 @@ export class UsersService implements OnModuleInit {
 
   async updateProfile(userId: string, data: { name?: string; phone?: string; alternativePhone?: string; savedAddresses?: any[] }) {
     try {
+      console.log('Updating profile for userId:', userId);
       const user = await this.userModel.findByIdAndUpdate(
         userId,
         { $set: data },
@@ -52,8 +53,9 @@ export class UsersService implements OnModuleInit {
       ).select('-passwordHash');
       if (!user) throw new BadRequestException('User not found');
       return user;
-    } catch (error) {
-      throw new BadRequestException('Failed to update profile: Invalid user ID or payload');
+    } catch (error: any) {
+      console.error('Update profile error:', error);
+      throw new BadRequestException(`Failed to update profile: ${error.message}`);
     }
   }
 

@@ -23,7 +23,7 @@ export class User {
   @Prop({ default: 'user', enum: ['user', 'admin'] })
   role: string;
 
-  @Prop({ default: [] })
+  @Prop({ type: [String], default: [] })
   savedAddresses: string[];
 
   // Tokenization for subscriptions via Paystack
