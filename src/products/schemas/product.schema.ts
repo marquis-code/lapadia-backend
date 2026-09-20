@@ -18,6 +18,9 @@ export class Product {
   @Prop({ required: true })
   imageUrl: string;
 
+  @Prop({ type: [String], default: [] })
+  images: string[];
+
   @Prop({ required: true })
   category: string;
 
