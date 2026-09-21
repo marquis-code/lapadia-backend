@@ -9,6 +9,7 @@ import { PaymentsModule } from '../payments/payments.module';
 import { UsersModule } from '../users/users.module';
 import { EmailModule } from '../email/email.module';
 import { ExportModule } from '../export/export.module';
+import { SettingsModule } from '../settings/settings.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { ExportModule } from '../export/export.module';
     PaymentsModule,
     UsersModule,
     EmailModule,
-    ExportModule
+    ExportModule,
+    SettingsModule
   ],
   providers: [OrdersService],
   controllers: [OrdersController, OrdersWebhookController],

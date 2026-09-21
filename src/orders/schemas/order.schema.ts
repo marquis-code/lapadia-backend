@@ -13,6 +13,15 @@ class OrderItem {
 
   @Prop({ required: true })
   priceAtPurchase: number;
+
+  @Prop({ type: Object, default: null })
+  selectedVariant: any;
+
+  @Prop({ type: [Object], default: [] })
+  selectedAddons: any[];
+
+  @Prop({ type: String, default: null })
+  frequency: string;
 }
 
 @Schema({ timestamps: true })
@@ -44,8 +53,11 @@ export class Order {
   @Prop({ type: Boolean, default: false })
   isSubscription: boolean;
 
-  @Prop({ type: String, enum: ['weekly', 'monthly', 'daily'], required: false })
+  @Prop({ type: String, required: false })
   subscriptionFrequency?: string;
+
+  @Prop({ type: Boolean, default: false })
+  deliverAllAtOnce: boolean;
 
   @Prop({ type: Types.ObjectId, ref: 'SubscriptionPlan', default: null })
   planId: Types.ObjectId;

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import mongoose from 'mongoose';
 
 export type ProductDocument = Product & Document;
@@ -8,6 +8,9 @@ export type ProductDocument = Product & Document;
 export class Product {
   @Prop({ required: true })
   name: string;
+
+  @Prop({ type: String, enum: ['regular', 'subscription'], default: 'regular' })
+  productType: string;
 
   @Prop({ required: true })
   description: string;
@@ -49,6 +52,22 @@ export class Product {
 
   @Prop({ type: [String], default: [] })
   ingredients: string[];
+
+  @Prop({
+    type: [{
+      measurement: { type: String, required: true },
+      price: { type: Number, required: true },
+      stock: { type: Number, default: 0 }
+    }],
+    default: []
+  })
+  variants: { measurement: string; price: number; stock: number }[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'AddonCategory' }], default: [] })
+  availableAddonCategories: string[];
+
+  @Prop({ type: [String], default: [] })
+  purchaseFrequencies: string[];
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

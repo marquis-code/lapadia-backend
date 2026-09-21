@@ -29,8 +29,13 @@ export class ProductsService implements OnModuleInit {
     }
   }
 
-  async findAll(limit?: number, trending?: boolean) {
-    let query = this.productModel.find().populate('categoryId');
+  async findAll(limit?: number, trending?: boolean, type?: string) {
+    let queryObj: any = {};
+    if (type) {
+      queryObj.productType = type;
+    }
+    
+    let query = this.productModel.find(queryObj).populate('categoryId');
     
     if (trending) {
       query = query.sort({ stock: -1 });

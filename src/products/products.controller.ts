@@ -8,10 +8,11 @@ export class ProductsController {
   @Get()
   async findAll(
     @Query('limit') limit: string,
-    @Query('trending') trending: string
+    @Query('trending') trending: string,
+    @Query('type') type: string
   ) {
     const isTrending = trending === 'true';
-    return this.productsService.findAll(limit ? parseInt(limit, 10) : undefined, isTrending);
+    return this.productsService.findAll(limit ? parseInt(limit, 10) : undefined, isTrending, type);
   }
 
   @Get(':id')

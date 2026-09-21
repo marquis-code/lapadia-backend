@@ -19,11 +19,6 @@ export class SettingsController {
       throw new UnauthorizedException('Admin token required');
     }
     
-    return this.settingsService.updateSettings({
-      expressDeliveryFee: body.expressDeliveryFee,
-      whatsappNumber1: body.whatsappNumber1,
-      whatsappNumber2: body.whatsappNumber2,
-      pickupLocation: body.pickupLocation,
-    });
+    return this.settingsService.updateSettings(body);
   }
 }

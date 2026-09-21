@@ -7,6 +7,7 @@ import { PaymentsService } from '../payments/payments.service';
 import { UsersService } from '../users/users.service';
 import { EmailService } from '../email/email.service';
 import { SheetsService } from '../export/sheets.service';
+import { SettingsService } from '../settings/settings.service';
 import * as crypto from 'crypto';
 
 @Injectable()
@@ -17,7 +18,8 @@ export class OrdersService {
     private paymentsService: PaymentsService,
     private usersService: UsersService,
     private emailService: EmailService,
-    private sheetsService: SheetsService
+    private sheetsService: SheetsService,
+    private settingsService: SettingsService
   ) {}
 
   async createOrder(orderData: any, userId?: string) {
@@ -224,6 +226,36 @@ export class OrdersService {
               `Order Confirmation - ${reference}`,
               emailHtml
             ).catch(e => console.error('Failed to send receipt:', e));
+          }
+
+          // Fetch settings to check if a business notification email is configured
+          try {
+            const settings = await this.settingsService.getSettings();
+            if (settings && settings.businessNotificationEmail) {
+              const businessEmailHtml = `
+                <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px;">
+                  <h2 style="color: #0f172a;">New Order Notification</h2>
+                  <p>A new order/subscription has been placed.</p>
+                  <p><strong>Order ID:</strong> ${order._id}</p>
+                  <p><strong>Customer:</strong> ${order.guestName || (order.userId as any)?.name || 'Guest'}</p>
+                  <p><strong>Email:</strong> ${order.guestEmail || (order.userId as any)?.email || 'N/A'}</p>
+                  <p><strong>Phone:</strong> ${order.guestPhone || 'N/A'}</p>
+                  <p><strong>Total Amount:</strong> ₦${order.totalAmount.toLocaleString()}</p>
+                  <p><strong>Delivery Method:</strong> ${order.deliveryMethod || 'delivery'}</p>
+                  <p><strong>Deliver All At Once:</strong> ${order.deliverAllAtOnce ? 'Yes' : 'No'}</p>
+                  ${order.isSubscription ? `<p><strong>Is Subscription:</strong> Yes</p>` : ''}
+                  <br/>
+                  ${emailHtml}
+                </div>
+              `;
+              this.emailService.sendEmail(
+                settings.businessNotificationEmail,
+                `New Order Alert - ${reference}`,
+                businessEmailHtml
+              ).catch(e => console.error('Failed to send business notification:', e));
+            }
+          } catch (settingsError) {
+            console.error('Failed to fetch settings for business email', settingsError);
           }
 
           // Append to real-time Google Sheet

@@ -21,6 +21,7 @@ import { BlogsModule } from './blogs/blogs.module';
 import { EventsModule } from './events/events.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { AddonsModule } from './addons/addons.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ContactsModule } from './contacts/contacts.module';
     EventsModule,
     CategoriesModule,
     ContactsModule,
+    AddonsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -16,7 +16,7 @@ export class SettingsService implements OnModuleInit {
   async ensureSettingsExist() {
     const count = await this.settingModel.countDocuments();
     if (count === 0) {
-      const defaultSettings = new this.settingModel({ expressDeliveryFee: 1500 });
+      const defaultSettings = new this.settingModel({});
       await defaultSettings.save();
     }
   }
@@ -24,25 +24,14 @@ export class SettingsService implements OnModuleInit {
   async getSettings(): Promise<SettingDocument> {
     let settings = await this.settingModel.findOne().exec();
     if (!settings) {
-      settings = await new this.settingModel({ expressDeliveryFee: 1500 }).save();
+      settings = await new this.settingModel({}).save();
     }
     return settings;
   }
 
-  async updateSettings(updateData: { expressDeliveryFee?: number, whatsappNumber1?: string, whatsappNumber2?: string, pickupLocation?: string }): Promise<SettingDocument> {
+  async updateSettings(updateData: any): Promise<SettingDocument> {
     const settings = await this.getSettings();
-    if (updateData.expressDeliveryFee !== undefined) {
-      settings.expressDeliveryFee = updateData.expressDeliveryFee;
-    }
-    if (updateData.whatsappNumber1 !== undefined) {
-      settings.whatsappNumber1 = updateData.whatsappNumber1;
-    }
-    if (updateData.whatsappNumber2 !== undefined) {
-      settings.whatsappNumber2 = updateData.whatsappNumber2;
-    }
-    if (updateData.pickupLocation !== undefined) {
-      settings.pickupLocation = updateData.pickupLocation;
-    }
+    Object.assign(settings, updateData);
     return settings.save();
   }
 }
