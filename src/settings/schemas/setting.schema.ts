@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 export type SettingDocument = Setting & Document;
 
@@ -33,7 +33,7 @@ export class Setting {
   businessNotificationEmail: string;
 
   @Prop({
-    type: Object,
+    type: mongoose.Schema.Types.Mixed,
     default: {
       title: 'Welcome to LapadiaFresh',
       subtitle: 'Elevate your healthy lifestyle with our premium fruit subscriptions. Freshness delivered exactly when you need it.',
@@ -42,13 +42,7 @@ export class Setting {
       featuredItems: []
     }
   })
-  welcomeModalConfig: {
-    title: string;
-    subtitle: string;
-    carouselTitle: string;
-    carouselSubtitle: string;
-    featuredItems: string[];
-  };
+  welcomeModalConfig: Record<string, any>;
 }
 
 export const SettingSchema = SchemaFactory.createForClass(Setting);

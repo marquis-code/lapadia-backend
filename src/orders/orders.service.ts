@@ -87,7 +87,15 @@ export class OrdersService {
     try {
       const response = await this.paymentsService.verifyTransaction(reference);
       if (response.data.status === 'success') {
-        const orderIdStr = reference.replace('ORD_', '');
+        if (reference.startsWith('SUB_RENEW_')) {
+          return this.handleSubscriptionRenewal(reference, response);
+        }
+
+        let orderIdStr = reference;
+        if (reference.startsWith('ORD_')) {
+          const parts = reference.split('_');
+          orderIdStr = parts[1];
+        }
         const order = await this.orderModel.findById(orderIdStr).populate('items.productId').populate('planId');
         
         if (!order) {
@@ -267,6 +275,90 @@ export class OrdersService {
     } catch (error) {
       console.error('Payment verification failed', error);
       return { success: false, message: 'Payment verification failed' };
+    }
+  }
+
+  private async handleSubscriptionRenewal(reference: string, response: any) {
+    try {
+      const parts = reference.split('_');
+      const subId = parts[2];
+      
+      const sub = await this.subscriptionModel.findById(subId).populate('userId').populate('planId').populate('items.productId');
+      if (!sub) return { success: false, message: 'Subscription not found' };
+
+      const user: any = sub.userId;
+      const plan: any = sub.planId;
+      
+      const newOrder = new this.orderModel({
+        userId: user._id,
+        items: sub.items,
+        totalAmount: sub.totalAmount || (plan ? plan.price * sub.quantity : 0),
+        deliveryAddress: sub.deliveryAddress || 'Pending',
+        deliveryTime: 'standard',
+        guestName: user.name,
+        guestEmail: user.email,
+        guestPhone: user.phone || 'N/A',
+        isSubscription: true,
+        subscriptionFrequency: sub.frequency,
+        planId: plan?._id,
+        deliveryMethod: 'delivery',
+        paymentStatus: 'paid',
+        orderStatus: 'processing',
+        paystackReference: reference
+      });
+      await newOrder.save();
+
+      const nextDate = new Date();
+      if (sub.frequency === 'daily') nextDate.setDate(nextDate.getDate() + 1);
+      if (sub.frequency === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
+      if (sub.frequency === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
+      sub.nextBillingDate = nextDate;
+      await sub.save();
+
+      const totalAmount = newOrder.totalAmount;
+      const emailHtml = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
+          <h1 style="color: #059669; text-align: center;">Thank You For Your Renewal!</h1>
+          <p>Hi ${user.name || 'Customer'},</p>
+          <p>Your subscription renewal was successful.</p>
+          <p><strong>Amount Billed:</strong> ₦${totalAmount.toLocaleString()}</p>
+          <p>Your next recurring delivery is being prepared. Thank you for continuing to choose Lapadia Fresh!</p>
+        </div>
+      `;
+      this.emailService.sendEmail(user.email, 'Subscription Renewed - Receipt', emailHtml).catch(e => console.error(e));
+
+      try {
+        const settings = await this.settingsService.getSettings();
+        if (settings && settings.businessNotificationEmail) {
+          const businessEmailHtml = `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px;">
+              <h2 style="color: #0f172a;">Subscription Renewal Notification</h2>
+              <p>A subscription has been successfully renewed.</p>
+              <p><strong>Order ID (for this delivery):</strong> ${newOrder._id}</p>
+              <p><strong>Subscription ID:</strong> ${sub._id}</p>
+              <p><strong>Customer:</strong> ${user.name || 'Guest'}</p>
+              <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+              <p><strong>Total Amount:</strong> ₦${totalAmount.toLocaleString()}</p>
+              <br/>
+              ${emailHtml}
+            </div>
+          `;
+          this.emailService.sendEmail(
+            settings.businessNotificationEmail,
+            `Subscription Renewal Alert - ${reference}`,
+            businessEmailHtml
+          ).catch(e => console.error('Failed to send business notification:', e));
+        }
+      } catch (settingsError) {
+        console.error('Failed to fetch settings for business email', settingsError);
+      }
+
+      this.sheetsService.appendOrderRow(newOrder).catch(e => console.error('Failed to append to sheets:', e));
+
+      return { success: true, message: 'Subscription renewal verified successfully' };
+    } catch (error) {
+      console.error('Failed to handle subscription renewal', error);
+      return { success: false, message: 'Subscription renewal verification failed' };
     }
   }
 

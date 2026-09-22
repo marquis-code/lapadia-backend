@@ -36,11 +36,12 @@ export class PaymentsService {
     return this.fetchPaystack(`/transaction/verify/${reference}`, 'GET');
   }
 
-  async chargeAuthorization(authCode: string, email: string, amount: number) {
+  async chargeAuthorization(authCode: string, email: string, amount: number, reference?: string) {
     return this.fetchPaystack('/transaction/charge_authorization', 'POST', {
       authorization_code: authCode,
       email,
       amount: amount * 100,
+      reference,
     });
   }
 }

@@ -119,36 +119,17 @@ export class SubscriptionsService {
         if (user.paystackAuthCode) {
           const totalAmount = sub.totalAmount || (plan ? plan.price * sub.quantity : 0);
           
-          this.logger.log(`Attempting to charge ${user.email} for subscription ${sub._id}`);
+          const reference = `SUB_RENEW_${sub._id}_${Date.now()}`;
+          this.logger.log(`Attempting to charge ${user.email} for subscription ${sub._id} with ref ${reference}`);
           const chargeResult = await this.paymentsService.chargeAuthorization(
             user.paystackAuthCode,
             user.email,
-            totalAmount
+            totalAmount,
+            reference
           );
 
           if (chargeResult.status && chargeResult.data.status === 'success') {
-            this.logger.log(`Successfully charged user ${user.email}`);
-            
-            // Generate Email Receipt
-            const emailHtml = `
-              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
-                <h1 style="color: #059669; text-align: center;">Thank You For Your Renewal!</h1>
-                <p>Hi ${user.name || 'Customer'},</p>
-                <p>Your subscription renewal was successful.</p>
-                <p><strong>Amount Billed:</strong> ₦${totalAmount.toLocaleString()}</p>
-                <p>Your next recurring delivery is being prepared. Thank you for continuing to choose Lapadia Fresh!</p>
-              </div>
-            `;
-            this.emailService.sendEmail(user.email, 'Subscription Renewed - Receipt', emailHtml).catch(e => console.error(e));
-            
-            // Calculate next billing date
-            const nextDate = new Date();
-            if (sub.frequency === 'daily') nextDate.setDate(nextDate.getDate() + 1);
-            if (sub.frequency === 'weekly') nextDate.setDate(nextDate.getDate() + 7);
-            if (sub.frequency === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
-
-            sub.nextBillingDate = nextDate;
-            await sub.save();
+            this.logger.log(`Successfully initiated charge for user ${user.email}. Webhook will handle logging and email.`);
           } else {
              this.logger.warn(`Payment failed for subscription ${sub._id}: ${chargeResult.message}`);
           }

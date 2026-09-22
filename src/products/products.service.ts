@@ -30,6 +30,7 @@ export class ProductsService implements OnModuleInit {
   }
 
   async findAll(limit?: number, trending?: boolean, type?: string) {
+    console.log("findAll type:", type);
     let queryObj: any = {};
     if (type) {
       queryObj.productType = type;
